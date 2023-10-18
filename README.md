@@ -11,5 +11,8 @@ This is a web server built in Express.
 
 ## Run
 
+## Update
+`pip freeze > requirements.txt`
+
 ## Clean
 `deactivate`
