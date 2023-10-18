@@ -4,12 +4,13 @@ from flask_restful import Api, Resource
 app = Flask(__name__)
 api = Api(app)
 
-class HelloWorld(Resource):
-    def get(self):
-        return {"data":"Hello World"}
+members = {"bob": 23}
 
-api.add_resource(HelloWorld, "/helloworld")
+class DaliMember(Resource):
+    def get(self, name: str):
+        return members[name]
 
+api.add_resource(DaliMember, "/dalimember/<string:name>")
 
 # Driver
 if __name__ == "__main__":

@@ -6,7 +6,9 @@ This is a web server built in Express. [Tutorial used](https://www.youtube.com/w
 
 ## Install
 `python -m venv venv`
+
 `source venv/bin/activate`
+
 `pip install -U requirements.txt`
 
 ## Run
