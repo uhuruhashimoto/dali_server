@@ -10,6 +10,7 @@ This is a web server built in Express.
 `pip install -U requirements.txt`
 
 ## Run
+`python main.py`
 
 ## Update
 `pip freeze > requirements.txt`
