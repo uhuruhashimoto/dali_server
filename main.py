@@ -73,9 +73,10 @@ resource_fields = {
     'picture': fields.String,
 }
 
-# STATEFUL
+# STATEFUL; DO NOT USE EXCEPT AT SERVER START UP
 # with app.app_context():
 #     db.create_all()
+# END STATEFUL CODE
 
 # Argument Parsing
 member_put_args = reqparse.RequestParser()
@@ -100,7 +101,7 @@ member_put_args.add_argument("picture", type=str, help="Picture url is required"
 
 
 # Endpoints
-class DaliMember(Resource):
+class DaliMemberByID(Resource):
     @marshal_with(resource_fields)
     def get(self, member_id: int):
         result = DaliMemberModel.query.filter_by(id=member_id).first()
@@ -139,8 +140,18 @@ class DaliMember(Resource):
         db.session.commit()
         return member
 
+class DaliMemberByName(Resource):
+    @marshal_with(resource_fields)
+    def get(self, member_name: str):
+        result = DaliMemberModel.query.filter_by(name=member_name).first()
+        if not result:
+            abort(404, message = f"No existing member of name {member_name}")
+        return result
+
+
 # Assemble API
-api.add_resource(DaliMember, "/dalimember/<int:member_id>")
+api.add_resource(DaliMemberByID, "/dalimember/<int:member_id>")
+api.add_resource(DaliMemberByName, "/dalimember/<string:member_name>")
 
 # Driver
 if __name__ == "__main__":
