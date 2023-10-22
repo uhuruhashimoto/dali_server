@@ -109,7 +109,7 @@ class DaliMember(Resource):
         return result
 
     @marshal_with(resource_fields)
-    def put(self, member_id: int):
+    def post(self, member_id: int):
         args = member_put_args.parse_args()
         result = DaliMemberModel.query.filter_by(id=member_id).first()
         if result:
