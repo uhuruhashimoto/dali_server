@@ -87,7 +87,7 @@ member_put_args.add_argument("pm", type=bool, help="DALI member pm [true/false] 
 member_put_args.add_argument("core", type=bool, help="DALI member core [true/false] is required", location='form', required=True)
 member_put_args.add_argument("mentor", type=bool, help="DALI member mentor [true/false] is required", location='form', required=True)
 member_put_args.add_argument("major", type=str, help="Major of the DALI member is required", location='form', required=True)
-member_put_args.add_argument("minor", type=str, help="Minor of the DALI member is required", location='form')
+member_put_args.add_argument("minor", type=str, help="Minor of the DALI member", location='form')
 member_put_args.add_argument("birthday", type=str, help="Birthday [mm-dd] of the DALI member is required", location='form', required=True)
 member_put_args.add_argument("home", type=str, help="Home [city, state] of the DALI member is required", location='form', required=True)
 member_put_args.add_argument("quote", type=str, help="Quote is required", location='form', required=True)
@@ -97,7 +97,6 @@ member_put_args.add_argument("favorite thing 3", type=str, help="Favorite thing 
 member_put_args.add_argument("favorite dartmouth tradition", type=str, help="Favorite Dartmouth tradition is required", location='form', required=True)
 member_put_args.add_argument("fun fact", type=str, help="Fun fact is required", location='form', required=True)
 member_put_args.add_argument("picture", type=str, help="Picture url is required", location='form', required=True)
-
 
 # Endpoints
 class DaliMembers(Resource):
@@ -249,6 +248,64 @@ class DaliMembersByMentor(Resource):
             abort(404, message = f"No existing Mentor members found for query.")
         return result
 
+class DaliMembersUnion(Resource):
+    @marshal_with(resource_fields)
+    def get(self, group1: str, val1: str, group2: str, val2: str):
+        groups = ['dev', 'des', 'pm', 'core', 'mentor']
+        queries = []
+        groups = [group1, group2]
+        vals = [val1, val2]
+        if not group1 in groups and group2 in groups:
+            abort(404, f"Invalid grouping {group1}, {group2} provided")
+        for i in range(2):
+            k = groups[i]
+            if k=='dev':
+                queries.append(DaliMemberModel.query.filter_by(dev=filter_bool(vals[i])))
+            elif k=='des':
+                queries.append(DaliMemberModel.query.filter_by(des=filter_bool(vals[i])))
+            elif k=='pm':
+                queries.append(DaliMemberModel.query.filter_by(pm=filter_bool(vals[i])))
+            elif k=='core':
+                queries.append(DaliMemberModel.query.filter_by(core=filter_bool(vals[i])))
+            elif k=='mentor':
+                queries.append(DaliMemberModel.query.filter_by(mentor=filter_bool(vals[i])))
+            else:
+                abort(404, f"Invalid grouping {k} : {v} provided.")
+        result = queries[0].union(queries[1]).all()
+        if not result:
+            abort(404, message = f"No existing members found for query.")
+        return result
+
+class DaliMembersIntersection(Resource):
+    @marshal_with(resource_fields)
+    def get(self, group1: str, val1: str, group2: str, val2: str):
+        groups = ['dev', 'des', 'pm', 'core', 'mentor']
+        queries = []
+        groups = [group1, group2]
+        vals = [val1, val2]
+        if not group1 in groups and group2 in groups:
+            abort(404, f"Invalid grouping {group1}, {group2} provided")
+        for i in range(2):
+            k = groups[i]
+            if k=='dev':
+                queries.append(DaliMemberModel.query.filter_by(dev=filter_bool(vals[i])))
+            elif k=='des':
+                queries.append(DaliMemberModel.query.filter_by(des=filter_bool(vals[i])))
+            elif k=='pm':
+                queries.append(DaliMemberModel.query.filter_by(pm=filter_bool(vals[i])))
+            elif k=='core':
+                queries.append(DaliMemberModel.query.filter_by(core=filter_bool(vals[i])))
+            elif k=='mentor':
+                queries.append(DaliMemberModel.query.filter_by(mentor=filter_bool(vals[i])))
+            else:
+                abort(404, f"Invalid grouping {k} : {v} provided.")
+        # Intersection from https://stackoverflow.com/questions/34305467/intersect-sqlalchemy-query-objects
+        stmt = queries[1].subquery()
+        result = queries[0].outerjoin(stmt, DaliMemberModel.id==stmt.c.id).filter(stmt.c.id != None).all()
+        if not result:
+            abort(404, message = f"No existing members found for query.")
+        return result
+
 
 # Assemble API
 api.add_resource(DaliMembers, "/dalimember")
@@ -263,6 +320,8 @@ api.add_resource(DaliMembersByDev, "/dalimember/search/dev/<string:dev>/")
 api.add_resource(DaliMembersByPM, "/dalimember/search/pm/<string:pm>/")
 api.add_resource(DaliMembersByCore, "/dalimember/search/core/<string:core>/")
 api.add_resource(DaliMembersByMentor, "/dalimember/search/mentor/<string:mentor>/")
+api.add_resource(DaliMembersUnion, "/dalimember/union/<string:group1>/<string:val1>/<string:group2>/<string:val2>")
+api.add_resource(DaliMembersIntersection, "/dalimember/intersection/<string:group1>/<string:val1>/<string:group2>/<string:val2>")
 
 # Driver
 if __name__ == "__main__":
