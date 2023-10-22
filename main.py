@@ -100,6 +100,14 @@ member_put_args.add_argument("picture", type=str, help="Picture url is required"
 
 
 # Endpoints
+class DaliMembers(Resource):
+    @marshal_with(resource_fields)
+    def get(self):
+        result = DaliMemberModel.query.all()
+        if not result:
+            abort(404, message = "No existing members.")
+        return result
+
 class DaliMemberByID(Resource):
     @marshal_with(resource_fields)
     def get(self, member_id: int):
@@ -183,14 +191,78 @@ class DaliMembersByClassYear(Resource):
             abort(404, message = f"No existing member with year {class_year}")
         return result
 
+def filter_bool(val: str):
+    mappings = {
+        '0': False,
+        'false': False,
+        'False': False,
+        '1': True,
+        'true': True,
+        'True': True
+    }
+    if val in mappings:
+        return mappings[val]
+    abort(404, message="Invalid true/false input provided.")
+
+class DaliMembersByDes(Resource):
+    @marshal_with(resource_fields)
+    def get(self, des: str):
+        des = filter_bool(des)
+        result = DaliMemberModel.query.filter_by(des=des).all()
+        if not result:
+            abort(404, message = f"No existing DES members found for query.")
+        return result
+
+class DaliMembersByDev(Resource):
+    @marshal_with(resource_fields)
+    def get(self, dev: str):
+        dev = filter_bool(dev)
+        result = DaliMemberModel.query.filter_by(dev=dev).all()
+        if not result:
+            abort(404, message = f"No existing DEV members found for query.")
+        return result
+
+class DaliMembersByPM(Resource):
+    @marshal_with(resource_fields)
+    def get(self, pm: str):
+        pm = filter_bool(pm)
+        result = DaliMemberModel.query.filter_by(pm=pm).all()
+        if not result:
+            abort(404, message = f"No existing PM members found for query.")
+        return result
+
+class DaliMembersByCore(Resource):
+    @marshal_with(resource_fields)
+    def get(self, core: str):
+        core = filter_bool(core)
+        result = DaliMemberModel.query.filter_by(core=core).all()
+        if not result:
+            abort(404, message = f"No existing Core members found for query.")
+        return result
+
+class DaliMembersByMentor(Resource):
+    @marshal_with(resource_fields)
+    def get(self, mentor: str):
+        mentor = filter_bool(mentor)
+        result = DaliMemberModel.query.filter_by(mentor=mentor).all()
+        if not result:
+            abort(404, message = f"No existing Mentor members found for query.")
+        return result
+
 
 # Assemble API
+api.add_resource(DaliMembers, "/dalimember")
 api.add_resource(DaliMemberByID, "/dalimember/<int:member_id>")
 api.add_resource(DaliMemberByFullName, "/dalimember/<string:member_name>")
 api.add_resource(DaliMemberAttributeByName, "/dalimember/<string:member_name>/<string:member_attribute>")
 api.add_resource(DaliMemberByFirstName, "/dalimember/search/firstname/<string:member_name>/")
 api.add_resource(DaliMemberByLastName, "/dalimember/search/lastname/<string:member_name>/")
 api.add_resource(DaliMembersByClassYear, "/dalimember/search/year/<int:class_year>/")
+api.add_resource(DaliMembersByDes, "/dalimember/search/des/<string:des>/")
+api.add_resource(DaliMembersByDev, "/dalimember/search/dev/<string:dev>/")
+api.add_resource(DaliMembersByPM, "/dalimember/search/pm/<string:pm>/")
+api.add_resource(DaliMembersByCore, "/dalimember/search/core/<string:core>/")
+api.add_resource(DaliMembersByMentor, "/dalimember/search/mentor/<string:mentor>/")
 
 # Driver
 if __name__ == "__main__":
