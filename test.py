@@ -2,14 +2,14 @@ import requests
 
 BASE = "http://127.0.0.1:5000/"
 
-put_response = requests.put(BASE + "dalimember/1", {'name': 'Julian'})
+put_response = requests.put(BASE + "dalimember/7", {'name': 'Ginger', 'dev': False})
 print(put_response.json())
 
-get_response = requests.get(BASE + "dalimember/1")
+get_response = requests.get(BASE + "dalimember/7")
 print(get_response.json())
 
-error_get_response = requests.get(BASE + "dalimember/3")
-print(error_get_response)
+error_get_response = requests.get(BASE + "dalimember/5")
+print(error_get_response.json())
 
 # # Get Test
 # get_response = requests.get(BASE + "dalimember/Amon Ferri")

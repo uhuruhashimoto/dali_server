@@ -1,5 +1,5 @@
 from flask import Flask, request
-from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
+from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with, inputs
 from flask_sqlalchemy import SQLAlchemy
 
 # Start Server
@@ -10,23 +10,44 @@ db = SQLAlchemy(app)
 
 class DaliMemberModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100))
+    # year = db.Column(db.String(100))
+    dev = db.Column(db.Boolean)
+    # des = db.Column(db.Boolean)
+    # pm = db.Column(db.Boolean)
+    # core = db.Column(db.Boolean)
+    # mentor = db.Column(db.Boolean)
+    # major = db.Column(db.String(100))
+    # minor = db.Column(db.String(100))
+    # birthday = db.Column(db.String(100))
+    # home = db.Column(db.String(100))
+    # quote = db.Column(db.String(100))
+    # favorite_thing_1 = db.Column(db.String(100))
+    # favorite_thing_2 = db.Column(db.String(100))
+    # favorite_thing_3 = db.Column(db.String(100))
+    # favorite_tradition = db.Column(db.String(100))
+    # fun_fact = db.Column(db.String(100))
+    # picture = db.Column(db.String(100))
 
     def __repr__(self):
-        return f"id = {id}, name = {name}"
+        return f"id = {id}, name = {name}, dev = {dev}"
 
 resource_fields = {
     'id': fields.Integer,
-    'name': fields.String
+    'name': fields.String,
+    'dev': fields.Boolean
 }
 
+# STATEFUL
+# with app.app_context():
+#     db.create_all()
 
 # Argument Parsing
 member_put_args = reqparse.RequestParser()
 member_put_args.add_argument("name", type=str, help="Name of the DALI member is required", location='form', required=True)
 # member_put_args.add_argument("year", type=str, help="Graduation year of the DALI member is required", location='form', required=True)
-# member_put_args.add_argument("dev", type=bool, help="DALI member dev [true/false] is required", location='form', required=True)
-# member_put_args.add_argument("des", type=bool, help="DALI member des [true/false] is required", location='form', required=True)
+member_put_args.add_argument("dev", type=inputs.boolean, help="DALI member dev [true/false] is required", location='form', required=True)
+# member_put_args.add_argument("des", type=inputs.boolean, help="DALI member des [true/false] is required", location='form', required=True)
 # member_put_args.add_argument("pm", type=bool, help="DALI member pm [true/false] is required", location='form', required=True)
 # member_put_args.add_argument("core", type=bool, help="DALI member core [true/false] is required", location='form', required=True)
 # member_put_args.add_argument("mentor", type=bool, help="DALI member mentor [true/false] is required", location='form', required=True)
@@ -57,8 +78,8 @@ class DaliMember(Resource):
         args = member_put_args.parse_args()
         result = DaliMemberModel.query.filter_by(id=member_id).first()
         if result:
-            abort(409, message = f"Existing member of id {member_id}")
-        member = DaliMemberModel(id=member_id, name=args['name'])
+            abort(409, message = f"Cannot create new member because member exists with id {member_id}")
+        member = DaliMemberModel(id=member_id, name=args['name'], dev=args['dev'])
         db.session.add(member)
         db.session.commit()
         return member
