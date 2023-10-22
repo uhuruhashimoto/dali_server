@@ -148,16 +148,13 @@ class DaliMemberByName(Resource):
         return result
 
 class DaliMemberAttributeByName(Resource):
-    @marshal_with(resource_fields)
     def get(self, member_name: str, member_attribute: str):
         result = DaliMemberModel.query.filter_by(name=member_name).first()
         if not result:
             abort(404, message = f"No existing member of name {member_name}")
-        print(result)
-        return result
-        # if member_attribute not in  result.keys():
-        #     abort(404, message = f"No attribute of name {member_attribute} found for {member_name}")
-        # return result[member_attribute]
+        if member_attribute not in  result.__dict__.keys() or member_attribute not in resource_fields.keys():
+            abort(404, message = f"No attribute of name {member_attribute} found for {member_name}")
+        return {member_attribute : result.__dict__[member_attribute]}
 
 
 # Assemble API
