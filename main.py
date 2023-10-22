@@ -174,13 +174,23 @@ class DaliMemberAttributeByName(Resource):
             abort(404, message = f"No attribute of name {member_attribute} found for {member_name}")
         return {member_attribute : result.__dict__[member_attribute]}
 
+class DaliMembersByClassYear(Resource):
+    @marshal_with(resource_fields)
+    def get(self, class_year: int):
+        s = str(class_year)
+        result = DaliMemberModel.query.filter_by(year=s).all()
+        if not result:
+            abort(404, message = f"No existing member with year {class_year}")
+        return result
+
 
 # Assemble API
 api.add_resource(DaliMemberByID, "/dalimember/<int:member_id>")
 api.add_resource(DaliMemberByFullName, "/dalimember/<string:member_name>")
 api.add_resource(DaliMemberAttributeByName, "/dalimember/<string:member_name>/<string:member_attribute>")
-api.add_resource(DaliMemberByFirstName, "/dalimember/search/<string:member_name>/")
+api.add_resource(DaliMemberByFirstName, "/dalimember/search/firstname/<string:member_name>/")
 api.add_resource(DaliMemberByLastName, "/dalimember/search/lastname/<string:member_name>/")
+api.add_resource(DaliMembersByClassYear, "/dalimember/search/year/<int:class_year>/")
 
 # Driver
 if __name__ == "__main__":
