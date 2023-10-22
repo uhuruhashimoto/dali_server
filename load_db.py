@@ -5,16 +5,16 @@ import requests
 
 BASE = "http://127.0.0.1:5000/"
 filename = "dali_social_media.json"
-name_keyword = "name"
-members = {}
 
 # Load file data and store by sequential ID
+print(f"Opening file {filename}...")
 f = open(filename)
+print(f"Loading JSON from {filename}...")
 members = json.load(f)
-id=0
-for member in members:
-    get_response = requests.put(BASE + f"dalimember/{id}")
+for id, member in enumerate(members):
+    get_response = requests.put(BASE + f"dalimember/{id}", member)
     print(get_response.json())
-    id+=1
+print(f"Closing {filename}...")
 f.close()
+print("Done.")
 

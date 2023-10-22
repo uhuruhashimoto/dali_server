@@ -87,7 +87,7 @@ member_put_args.add_argument("pm", type=bool, help="DALI member pm [true/false] 
 member_put_args.add_argument("core", type=bool, help="DALI member core [true/false] is required", location='form', required=True)
 member_put_args.add_argument("mentor", type=bool, help="DALI member mentor [true/false] is required", location='form', required=True)
 member_put_args.add_argument("major", type=str, help="Major of the DALI member is required", location='form', required=True)
-member_put_args.add_argument("minor", type=str, help="Minor of the DALI member is required", location='form', required=True)
+member_put_args.add_argument("minor", type=str, help="Minor of the DALI member is required", location='form')
 member_put_args.add_argument("birthday", type=str, help="Birthday [mm-dd] of the DALI member is required", location='form', required=True)
 member_put_args.add_argument("home", type=str, help="Home [city, state] of the DALI member is required", location='form', required=True)
 member_put_args.add_argument("quote", type=str, help="Quote is required", location='form', required=True)
