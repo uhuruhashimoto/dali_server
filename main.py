@@ -27,33 +27,40 @@ member_put_args.add_argument("favorite dartmouth tradition", type=str, help="Fav
 member_put_args.add_argument("fun fact", type=str, help="Fun fact is required", location='form', required=True)
 member_put_args.add_argument("picture", type=str, help="Picture url is required", location='form', required=True)
 
-# Data (placeholder)
+# Load file data and store by sequential ID
 filename = "dali_social_media.json"
-f = open(filename)
-# Loads a list of dicts, each containing member info
-memberlist = json.load(f)
+name_keyword = "name"
 members = {}
-# Translate this to a dict
-for member in memberlist:
-    if "name" in member:
-        whichname=member["name"]
-        del member["name"]
-        members[whichname] = member
+f = open(filename)
+memberlist = json.load(f)
+for i in range(len(memberlist)):
+    if name_keyword in memberlist[i]:
+        members[(i, memberlist[i][name_keyword])] = memberlist[i]
     else:
-        print("Error: no name found in json entry.")
+        Error.log("Discarding entry. No name found in memberlist entry " + memberlist[i])
+print(members)
 f.close()
 
 # Endpoints
 class DaliMember(Resource):
+
+    def get(self, id: int):
+        for k in members.keys():
+            if k[0] == id:
+                return members[(k)]
+        return {"message": "No user of id " + str(id)}
+
     def get(self, name: str):
-        if name in members:
-            return members[name]
-        return {"message":"No member of name " + name}
+        for k in members.keys():
+            if k[1] == name:
+                return members[(k)]
+        return {"message": "No user of name " + name}
 
     def put(self, name: str):
         args = member_put_args.parse_args()
-        members[name] = args
-        return members[name]
+        new_id = len(members.keys())
+        members[(new_id,name)] = args
+        return members[(new_id, name)]
 
 # Assemble API
 api.add_resource(DaliMember, "/dalimember/<string:name>")
