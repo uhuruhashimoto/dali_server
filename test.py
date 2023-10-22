@@ -30,5 +30,5 @@ print(post_response.json())
 get_response = requests.get(BASE + "dalimember/0")
 print(get_response.json())
 
-# get_response = requests.get(BASE + "dalimember/Andy Kotz")
-# print(get_response.json())
+get_response = requests.get(BASE + "dalimember/Andy Kotz")
+print(get_response.json())
