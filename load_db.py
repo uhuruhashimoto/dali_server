@@ -10,8 +10,8 @@ filename = "dali_social_media.json"
 print(f"Loading JSON from {filename} into database...")
 f = open(filename)
 members = json.load(f)
-for id, member in enumerate(members):
-    get_response = requests.post(BASE + f"dalimember/{id}", member)
+for i, member in enumerate(members):
+    get_response = requests.post(BASE + f"dalimember/{i}", member)
     print(get_response.json())
 f.close()
 print("...Done.")
