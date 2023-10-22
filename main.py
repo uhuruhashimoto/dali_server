@@ -152,7 +152,15 @@ class DaliMemberByFirstName(Resource):
     def get(self, member_name: str):
         q = member_name + '%'
         result = DaliMemberModel.query.filter(DaliMemberModel.name.like(q)).all()
-        print(result)
+        if not result:
+            abort(404, message = f"No existing member of name {member_name}")
+        return result
+
+class DaliMemberByLastName(Resource):
+    @marshal_with(resource_fields)
+    def get(self, member_name: str):
+        q = '%' + member_name
+        result = DaliMemberModel.query.filter(DaliMemberModel.name.like(q)).all()
         if not result:
             abort(404, message = f"No existing member of name {member_name}")
         return result
@@ -172,6 +180,7 @@ api.add_resource(DaliMemberByID, "/dalimember/<int:member_id>")
 api.add_resource(DaliMemberByFullName, "/dalimember/<string:member_name>")
 api.add_resource(DaliMemberAttributeByName, "/dalimember/<string:member_name>/<string:member_attribute>")
 api.add_resource(DaliMemberByFirstName, "/dalimember/search/<string:member_name>/")
+api.add_resource(DaliMemberByLastName, "/dalimember/search/lastname/<string:member_name>/")
 
 # Driver
 if __name__ == "__main__":
