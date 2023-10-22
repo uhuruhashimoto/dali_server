@@ -30,26 +30,25 @@ class DaliMemberModel(db.Model):
     picture = db.Column(db.String(100))
 
     def __repr__(self):
-        return
-        f"""id = {id},
-        name = {name},
-        year = {year},
-        dev = {dev},
-        des = {des},
-        pm = {pm},
-        core = {core},
-        mentor = {mentor},
-        major = {major},
-        minor = {minor},
-        birthday = {birthday},
-        home = {home},
-        quote = {quote},
-        favorite thing 1 = {favorite_thing_1},
-        favorite thing 2 = {favorite_thing_2},
-        favorite thing 3 = {favorite_thing_3},
-        favorite_tradition = {favorite_tradition},
-        fun fact = {fun_fact},
-        picture = {picture}"""
+        return f"id = {self.id}\n"\
+        f"name = {self.name}\n"\
+        f"year = {self.year}\n"\
+        f"dev = {self.dev}\n"\
+        f"des = {self.des}\n"\
+        f"pm = {self.pm}\n"\
+        f"core = {self.core}\n"\
+        f"mentor = {self.mentor}\n"\
+        f"major = {self.major}\n"\
+        f"minor = {self.minor}\n"\
+        f"birthday = {self.birthday}\n"\
+        f"home = {self.home}\n"\
+        f"quote = {self.quote}\n"\
+        f"favorite thing 1 = {self.favorite_thing_1}\n"\
+        f"favorite thing 2 = {self.favorite_thing_2}\n"\
+        f"favorite thing 3 = {self.favorite_thing_3}\n"\
+        f"favorite tradition = {self.favorite_tradition}\n"\
+        f"fun fact = {self.fun_fact}\n"\
+        f"picture = {self.picture}"
 
 resource_fields = {
     'id': fields.Integer,
@@ -148,10 +147,23 @@ class DaliMemberByName(Resource):
             abort(404, message = f"No existing member of name {member_name}")
         return result
 
+class DaliMemberAttributeByName(Resource):
+    @marshal_with(resource_fields)
+    def get(self, member_name: str, member_attribute: str):
+        result = DaliMemberModel.query.filter_by(name=member_name).first()
+        if not result:
+            abort(404, message = f"No existing member of name {member_name}")
+        print(result)
+        return result
+        # if member_attribute not in  result.keys():
+        #     abort(404, message = f"No attribute of name {member_attribute} found for {member_name}")
+        # return result[member_attribute]
+
 
 # Assemble API
 api.add_resource(DaliMemberByID, "/dalimember/<int:member_id>")
 api.add_resource(DaliMemberByName, "/dalimember/<string:member_name>")
+api.add_resource(DaliMemberAttributeByName, "/dalimember/<string:member_name>/<string:member_attribute>")
 
 # Driver
 if __name__ == "__main__":
