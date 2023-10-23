@@ -15,8 +15,11 @@ This is a RESTful web server built in Express, using an SQLite db to store data.
     - First/last name wildcard search
         - First name: "/dalimember/search/firstname/[name]"
         - Last name: "/dalimember/search/lastname/[lastname]"
-    - Year search
+    - Class year search
         - "/dalimember/search/year/[year]"
+    - Birthday month search
+        - "/dalimember/search/birhday/[month]"
+            - month may be numeric or by month of the year
     - des/dev/pm/core/mentor search
         - "/dalimember/search/[des/dev/pm/core/mentor]/[True/true/1/False/false/0]"
 - Union

@@ -309,19 +309,20 @@ class DaliMembersIntersection(Resource):
 class DaliMembersByBirthdayMonth(Resource):
     @marshal_with(resource_fields)
     def get(self, member_birthday: str):
+        member_birthday = member_birthday.lower()
         birthday_mapping = {
-            "January":"01",
-            "February":"02",
-            "March":"03",
-            "April":"04",
-            "May":"05",
-            "June":"06",
-            "July":"07",
-            "August":"08",
-            "September":"09",
-            "October":"10",
-            "November":"11",
-            "December":"12"
+            "january":"01",
+            "february":"02",
+            "march":"03",
+            "april":"04",
+            "may":"05",
+            "june":"06",
+            "july":"07",
+            "august":"08",
+            "september":"09",
+            "october":"10",
+            "november":"11",
+            "december":"12"
         }
         if member_birthday not in birthday_mapping.keys() and member_birthday not in birthday_mapping.values():
             abort(f"Invalid month {member_birthday} provided")
