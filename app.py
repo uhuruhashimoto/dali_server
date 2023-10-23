@@ -306,6 +306,32 @@ class DaliMembersIntersection(Resource):
             abort(404, message = f"No existing members found for query.")
         return result
 
+class DaliMembersByBirthdayMonth(Resource):
+    @marshal_with(resource_fields)
+    def get(self, member_birthday: str):
+        birthday_mapping = {
+            "January":"01",
+            "February":"02",
+            "March":"03",
+            "April":"04",
+            "May":"05",
+            "June":"06",
+            "July":"07",
+            "August":"08",
+            "September":"09",
+            "October":"10",
+            "November":"11",
+            "December":"12"
+        }
+        if member_birthday not in birthday_mapping.keys() and member_birthday not in birthday_mapping.values():
+            abort(f"Invalid month {member_birthday} provided")
+        if member_birthday in birthday_mapping.keys():
+            member_birthday = birthday_mapping[member_birthday]
+        q = member_birthday + "%"
+        result = DaliMemberModel.query.filter(DaliMemberModel.birthday.like(q)).all()
+        if not result:
+            abort(404, message = f"No existing member with birthdays in {member_birthday}")
+        return result
 
 # Assemble API
 api.add_resource(DaliMembers, "/dalimember")
@@ -315,6 +341,7 @@ api.add_resource(DaliMemberAttributeByName, "/dalimember/<string:member_name>/<s
 api.add_resource(DaliMemberByFirstName, "/dalimember/search/firstname/<string:member_name>/")
 api.add_resource(DaliMemberByLastName, "/dalimember/search/lastname/<string:member_name>/")
 api.add_resource(DaliMembersByClassYear, "/dalimember/search/year/<int:class_year>/")
+api.add_resource(DaliMembersByBirthdayMonth, "/dalimember/search/birthday/<string:member_birthday>/")
 api.add_resource(DaliMembersByDes, "/dalimember/search/des/<string:des>/")
 api.add_resource(DaliMembersByDev, "/dalimember/search/dev/<string:dev>/")
 api.add_resource(DaliMembersByPM, "/dalimember/search/pm/<string:pm>/")
